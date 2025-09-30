@@ -1,21 +1,43 @@
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) {
-        List<Integer> intList = Arrays.asList(1, 2, 5, 16, -1, -2, 0, 32, 3, 5, 8, 23, 4);
+        List<String> names = Arrays.asList("Jack", "Connor", "Harry", "George", "Samuel", "John");
+        List<String> families = Arrays.asList("Evans", "Young", "Harris", "Wilson", "Davies", "Adamson", "Brown");
 
-        List<Integer> result = new ArrayList<>();
+        Collection<Person> persons = new ArrayList<>();
+        Random random = new Random();
 
-        for (Integer i : intList) {
-            if (i > 0 && i % 2 == 0) {
-                result.add(i);
-            }
+        for (int i = 0; i < 10_000_000; i++) {
+            persons.add(new Person(
+                    names.get(random.nextInt(names.size())),
+                    families.get(random.nextInt(families.size())),
+                    random.nextInt(100),
+                    Sex.values()[random.nextInt(Sex.values().length)],
+                    Education.values()[random.nextInt(Education.values().length)])
+            );
         }
 
-        Collections.sort(result);
+        long under18 = persons.stream()
+                .filter(p -> p.getAge() < 18)
+                .count();
+        System.out.println("Несовершеннолетних: " + under18);
 
-        for (Integer i : result) {
-            System.out.println(i);
-        }
+        List<String> conscripts = persons.stream()
+                .filter(p -> p.getSex() == Sex.MAN)
+                .filter(p -> p.getAge() >= 18 && p.getAge() < 27)
+                .map(Person::getFamily)
+                .collect(Collectors.toList());
+        System.out.println("Количество призывников: " + conscripts.size());
+
+        List<Person> workers = persons.stream()
+                .filter(p -> p.getEducation() == Education.HIGHER)
+                .filter(p -> p.getAge() >= 18)
+                .filter(p -> (p.getSex() == Sex.WOMAN && p.getAge() <= 60)
+                        || (p.getSex() == Sex.MAN && p.getAge() <= 65))
+                .sorted(Comparator.comparing(Person::getFamily))
+                .collect(Collectors.toList());
+        System.out.println("Трудоспособных с высшим образованием: " + workers.size());
     }
 }
