@@ -1,25 +1,27 @@
-import java.util.Scanner;
-
 public class Main {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        System.out.println("Калькулятор");
+        Calculator calc = Calculator.instance.get();
 
-        System.out.print("Введите цену товара (в руб.): ");
-        int price = scanner.nextInt();
+        int a = calc.plus.apply(1, 2);
+        int b = calc.minus.apply(1, 1);
+        int c = calc.devide.apply(a, b);
 
-        System.out.print("Введите вес товара (в кг.): ");
-        int weight = scanner.nextInt();
+        calc.println.accept(c);
 
-        int customsFee = calculateCustoms(price, weight);
+        int d = calc.multiply.apply(5, 6);
+        calc.println.accept(d);
 
-        System.out.println("Размер пошлины (в руб.) составит: " + customsFee);
+        int e = calc.pow.apply(4);
+        calc.println.accept(e);
 
-        scanner.close();
-    }
+        boolean isPos = calc.isPositive.test(-5); // false
+        System.out.println("Число положительное? " + isPos);
 
-    public static int calculateCustoms(int price, int weight) {
-        int fromPrice = price / 100;
-        int fromWeight = weight * 100;
-        return fromPrice + fromWeight;
+        System.out.println("\nРабочий");
+        OnTaskDoneListener listener = System.out::println;
+
+        Worker worker = new Worker(listener);
+        worker.start();
     }
 }
